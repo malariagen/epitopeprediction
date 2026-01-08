@@ -17,6 +17,7 @@ from enum import Enum
 import numpy as np
 import pandas as pd
 import mhcgnomes
+import os
 
 # Create logger object with date and time
 import logging
@@ -121,7 +122,7 @@ class Utils:
 # -------------------------------------------
 class PredictionResult:
     def __init__(self, file_path, alleles, peptide_col_name):
-        self.file_path = file_path
+        self.file_path = os.path.normpath(file_path.replace('\\:', ':'))
         self.alleles = alleles
         self.peptide_col_name = peptide_col_name
         self.predictor = None

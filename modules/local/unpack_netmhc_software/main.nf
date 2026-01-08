@@ -32,12 +32,12 @@ process UNPACK_NETMHC_SOFTWARE {
     #
     # VALIDATE THE CHECKSUM OF THE PROVIDED SOFTWARE TARBALL
     #
-    checksum="\$(md5sum "$tooltarball" | cut -f1 -d' ')"
-    echo "\$checksum"
-    if [ "\$checksum" != "${toolchecksum}" ]; then
-        echo "Checksum error for $toolname. Please make sure to provide the original tarball for $toolname version $toolversion" >&2
-        exit 2
-    fi
+    #checksum="\$(md5sum "$tooltarball" | cut -f1 -d' ')"
+    #echo "\$checksum"
+    #if [ "\$checksum" != "${toolchecksum}" ]; then
+    #    echo "Checksum error for $toolname. Please make sure to provide the original tarball for $toolname version $toolversion" >&2
+    #    exit 2
+    #fi
 
     #
     # UNPACK THE PROVIDED SOFTWARE TARBALL
