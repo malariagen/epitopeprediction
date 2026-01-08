@@ -49,8 +49,8 @@ workflow NFCORE_EPITOPEPREDICTION {
     EPITOPEPREDICTION (
         samplesheet
     )
-    emit:
-    multiqc_report = EPITOPEPREDICTION.out.multiqc_report // channel: /path/to/multiqc_report.html
+    // emit:
+    // multiqc_report = EPITOPEPREDICTION.out.multiqc_report // channel: /path/to/multiqc_report.html
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
