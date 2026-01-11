@@ -87,20 +87,20 @@ workflow MHC_BINDING_PREDICTION {
             ch_binding_predictors_out = ch_binding_predictors_out.mix(NETMHCIIPAN.out.predicted)
         }
 
-    // Join predicted file and subworkflow input file to add inputfile metadata
-    ch_binding_predictors_out
-        .map { meta, file -> [meta.findAll { k, v -> k != 'alleles_supported' }, file] } // drop alleles_supported from meta
-        .groupTuple()
-        .join( ch_peptides_to_predict )
-        .set { ch_binding_predictors_out_meta}
+    // // Join predicted file and subworkflow input file to add inputfile metadata
+    // ch_binding_predictors_out
+    //     .map { meta, file -> [meta.findAll { k, v -> k != 'alleles_supported' }, file] } // drop alleles_supported from meta
+    //     .groupTuple()
+    //     .join( ch_peptides_to_predict )
+    //     .set { ch_binding_predictors_out_meta}
 
-    // Merge predictions from different predictors
-    MERGE_PREDICTIONS( ch_binding_predictors_out_meta )
-    ch_versions = ch_versions.mix(MERGE_PREDICTIONS.out.versions)
+    // // Merge predictions from different predictors
+    // MERGE_PREDICTIONS( ch_binding_predictors_out_meta )
+    // ch_versions = ch_versions.mix(MERGE_PREDICTIONS.out.versions)
 
-    emit:
-    predicted = MERGE_PREDICTIONS.out.merged
-    versions = ch_versions
+    // emit:
+    // predicted = MERGE_PREDICTIONS.out.merged
+    // versions = ch_versions
 }
 
 //==============================================================================

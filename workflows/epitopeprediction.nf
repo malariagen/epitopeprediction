@@ -10,7 +10,7 @@ include { VARIANT_SPLIT               } from '../modules/local/variant_split'
 include { FASTA2PEPTIDES              } from '../modules/local/fasta2peptides'
 include { SPLIT_PEPTIDES              } from '../modules/local/split_peptides'
 include { EPYTOPE_VARIANT_PREDICTION  } from '../modules/local/epytope_variant_prediction'
-include { SUMMARIZE_RESULTS           } from '../modules/local/summarize_results'
+// include { SUMMARIZE_RESULTS           } from '../modules/local/summarize_results'
 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
