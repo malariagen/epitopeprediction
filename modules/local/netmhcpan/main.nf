@@ -64,6 +64,7 @@ process NETMHCPAN {
         -xlsfile mode1.xls \
         $args
     
+    # TODO: This isn't quite working at the moment
     # Merge horizontally: mode0 columns + mode1 columns (excluding Pos, Peptide, ID)
     paste mode0.xls <(cut -f4- mode1.xls) | \\
         sed '1s/core\\ticore\\tScore\\tRank\\tBA_score\\tBA_Rank\\tAve\\tNB/core_AP\\ticore_AP\\tScore_AP\\tRank_AP\\tBA_score_AP\\tBA_Rank_AP\\tAve_AP\\tNB_AP\\tcore_PE\\ticore_PE\\tScore_PE\\tRank_PE\\tAve_PE\\tNB_PE/' \\
