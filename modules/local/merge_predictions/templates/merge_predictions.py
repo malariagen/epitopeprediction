@@ -192,8 +192,8 @@ class PredictionResult:
         # Read the file into a DataFrame with no headers initially
         df = pd.read_csv(self.file_path, sep='\t', skiprows=1)
         # Extract Peptide, percentile rank, binding affinity
-        df = df[df.columns[df.columns.str.contains('Peptide|BA_Rank|BA-score')]]
-        df = df.rename(columns={'Peptide':self.peptide_col_name,'BA_Rank':'BA_Rank.0','BA-score':'BA-score.0'})
+        df = df[df.columns[df.columns.str.contains('Peptide|EL_Rank|BA-score')]]
+        df = df.rename(columns={'Peptide':self.peptide_col_name,'EL_Rank':'EL_Rank.0','BA-score':'BA-score.0'})
         # to longformat based on .0|1|2..
         df_long = pd.melt(
             df,
@@ -205,7 +205,7 @@ class PredictionResult:
 
         # Extract the allele information (e.g., .0, .1, etc.)
         df_long['allele'] = df_long['metric'].str.split('.').str[1]
-        df_long['metric'] = df_long['metric'].apply(lambda x: x.split('.')[0].replace('BA_Rank','rank').replace('BA-score','BA'))
+        df_long['metric'] = df_long['metric'].apply(lambda x: x.split('.')[0].replace('EL_Rank','rank').replace('BA-score','BA'))
 
         # Pivot table to organize columns properly
         df_pivot = df_long.pivot_table(index=[self.peptide_col_name, 'allele'], columns='metric', values='value').reset_index()
