@@ -143,8 +143,9 @@ class Utils:
             tool_allele_input: List of supported alleles for the given tool
         """
         tool_allele_input = [allele for allele in allele_ls if allele in supported_alleles_tool]
-        # Print warning if allele not in supported alleles
-        logging.warning(f"Ignoring not supported alleles for {tool}: {set(allele_ls) - set(tool_allele_input)}")
+        unsupported_alleles = set(allele_ls) - set(tool_allele_input)
+        if unsupported_alleles:
+            logging.warning(f"Ignoring not supported alleles for {tool}: {unsupported_alleles}")
         if len(tool_allele_input) == 0:
             logging.warning(f"No supported alleles for {tool} found. Aborting..")
         elif len(tool_allele_input) < len(allele_ls):
@@ -167,12 +168,21 @@ class Utils:
 def main():
     args = Arguments()
 
+    tool_configs = {
+        "mhcflurry":    {"min": MinLength.MHCFLURRY.value,   "max": MaxLength.MHCFLURRY.value,          "suffix": "mhcflurry_input.csv",    "mhc_class": "I"},
+        "mhcnuggets":   {"min": MinLength.MHCNUGGETS.value,  "max": MaxLength.MHCNUGGETS_CLASSI.value,  "suffix": "mhcnuggets_input.tsv",   "mhc_class": "I"},
+        "mhcnuggetsii": {"min": MinLength.MHCNUGGETS.value,  "max": MaxLength.MHCNUGGETS_CLASSII.value, "suffix": "mhcnuggetsii_input.tsv", "mhc_class": "II"},
+        "netmhcpan":    {"min": MinLength.NETMHCPAN.value,   "max": MaxLength.NETMHCPAN.value,          "suffix": "netmhcpan_input.tsv",    "mhc_class": "I"},
+        "netmhciipan":  {"min": MinLength.NETMHCIIPAN.value, "max": MaxLength.NETMHCIIPAN.value,        "suffix": "netmhciipan_input.tsv",  "mhc_class": "II"},
+    }
+    applicable_tools = [tool for tool in args.tools if tool_configs[tool]["mhc_class"] == args.mhc_class]
+
     # Parse alleles and save supported alleles per tool
     alleles_normalized = Utils.parse_alleles(args.alleles)
     supported_alleles_dict = json.load(open(args.supported_alleles_json))
     tools_allele_input = {
         tool: ';'.join(Utils.keep_supported_alleles(alleles_normalized, tool, supported_alleles_dict[tool]))
-        for tool in args.tools
+        for tool in applicable_tools
     }
     with open(f"{args.prefix}_allele_input.json", "w") as f:
         json.dump(tools_allele_input, f)
@@ -192,18 +202,10 @@ def main():
 
     logging.info(f"Filtered peptides based on MHC class length. {len(df_filtered)} peptides left for prediction..")
 
-    # Define tool-specific configurations
-    tool_configs = {
-        "mhcflurry":    {"min": MinLength.MHCFLURRY.value,   "max": MaxLength.MHCFLURRY.value,          "suffix": "mhcflurry_input.csv",    "mhc_class": "I"},
-        "mhcnuggets":   {"min": MinLength.MHCNUGGETS.value,  "max": MaxLength.MHCNUGGETS_CLASSI.value,  "suffix": "mhcnuggets_input.tsv",   "mhc_class": "I"},
-        "mhcnuggetsii": {"min": MinLength.MHCNUGGETS.value,  "max": MaxLength.MHCNUGGETS_CLASSII.value, "suffix": "mhcnuggetsii_input.tsv", "mhc_class": "II"},
-        "netmhcpan":    {"min": MinLength.NETMHCPAN.value,   "max": MaxLength.NETMHCPAN.value,          "suffix": "netmhcpan_input.tsv",    "mhc_class": "I"},
-        "netmhciipan":  {"min": MinLength.NETMHCIIPAN.value, "max": MaxLength.NETMHCIIPAN.value,        "suffix": "netmhciipan_input.tsv",  "mhc_class": "II"},
-    }
-
     # Step 2: Apply tool-specific length filtering** on top of MHC class filtering
-    for tool, config in tool_configs.items():
-        if tool in args.tools and config["mhc_class"] == args.mhc_class:
+    for tool in applicable_tools:
+        config = tool_configs[tool]
+        if config["mhc_class"] == args.mhc_class:
             df_tool = Utils.filter_by_length(df_filtered, config["min"], config["max"], args.peptide_col_name)
             if df_tool.empty:
                 logging.info(f"No peptides found for {tool}, skipping...")
